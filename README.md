@@ -74,6 +74,6 @@ python3 script.py
     deactivate
 ```
 
-## NOTE: Open for contribution
-
 ---
+
+## NOTE: Open for contribution
