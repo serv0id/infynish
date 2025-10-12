@@ -1,14 +1,15 @@
 import os, requests
 from dotenv import dotenv_values
 
-ACCESS_TOKEN = "PLACE_YOUR_ACCESS_TOKEN_HERE" # place your access here or put it in .env file in same folder
+FALLBACK_TOKEN = "PLACE_YOUR_ACCESS_TOKEN_HERE" # place your access_token here or put it in .env file in same folder
 
 # ---
-config = dotenv_values(".env")  # reads .env into a dict
-ACCESS_TOKEN = config.get("access_token") # load access_token
-if not ACCESS_TOKEN:
-	print("[-] ERROR, Please set access_token, check README file for more info.")
-	exit()
+dotenv_dict = dotenv_values(".env")
+dotenv_token = dotenv_dict.get("ACCESS_TOKEN") or dotenv_dict.get("access_token")
+ACCESS_TOKEN = dotenv_token or FALLBACK_TOKEN
+if not ACCESS_TOKEN or ACCESS_TOKEN == "PLACE_YOUR_ACCESS_TOKEN_HERE":
+    print("[-] ERROR: Please set ACCESS_TOKEN (env var ACCESS_TOKEN or key access_token in .env).")
+    exit()
 
 PAGE_NUMBER = 1 # page indexing starts with 1
 PAGE_SIZE = 9999 # did not wanted to implement page handling, this is workaround
