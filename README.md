@@ -54,6 +54,8 @@ my_project_env\Scripts\activate.bat
 my_project_env\Scripts\Activate.ps1
 ```
 
+### Run the script
+
 - Install following package requirements
 
 ```console
