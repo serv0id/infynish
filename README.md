@@ -21,7 +21,7 @@ Neither i was able to found any working solutions to do this task, nor I had eno
 - Once udemy is loaded, open the the `Developer tools` (Press F12 key or Ctrl+Shift+I or Right click --> Inspect).![alt text](assets/image-1.png)
 - Open applications tab![alt text](assets/image-2.png)
 - Go to Cookies and look for access_token value as shown below:![alt text](assets/image-3.png)
-- Copy the access_token value and put it in the .env file in this line here.
+- Copy the access_token value and put it in the .env file.
 
 > [!WARNING]
 > NEVER PUT ENVIRONMENT VARIABLES IN YOUR GITHUB REPOSITORY. THIS IS PRESENT HERE FOR ILLUSTRATIVE PURPOSES.
