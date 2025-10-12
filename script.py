@@ -8,7 +8,7 @@ dotenv_dict = dotenv_values(".env")
 dotenv_token = dotenv_dict.get("ACCESS_TOKEN") or dotenv_dict.get("access_token")
 ACCESS_TOKEN = dotenv_token or FALLBACK_TOKEN
 if not ACCESS_TOKEN or ACCESS_TOKEN == "PLACE_YOUR_ACCESS_TOKEN_HERE":
-    print("[-] ERROR: Please set ACCESS_TOKEN (env var ACCESS_TOKEN or key access_token in .env).")
+    print("[-] ERROR: Please set access_token, check README file for more info")
     exit()
 
 PAGE_NUMBER = 1 # page indexing starts with 1
@@ -99,18 +99,12 @@ if __name__ == "__main__":
 			finally:
 				print(f"[-] ERROR, {data}")
 				exit()
-			
 	else:
 		print("[-] Unable to get data")
 		print("[x] Exiting")
 		exit()
 	lecture_count_in_page = get_lecture_count(data)
-	total_lectures = data["count"]
-	print(f"[+] Total lectures {total_lectures}")
-	
-	# If there is more content than 9999, let user know to run again with updated page size
-	if lecture_count_in_page != total_lectures:
-		print(f"[+] Got {lecture_count_in_page} lectures in current page, (Run again with updated page value)")
+	print(f"[+] Total lectures {lecture_count_in_page}")
 
 	lecture_ids = get_lecture_ids(data)
 	complete_lectures(lecture_ids) # complete lectures
