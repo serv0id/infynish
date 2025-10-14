@@ -1,23 +1,22 @@
-from typing import Any
+import click
 import requests
 from requests.cookies import cookiejar_from_dict
 from loguru import logger
-
 from config import COMPLETE_LECTURE_URL, ACCESS_TOKEN, HEADERS, COURSE_URL
-
-MAX_RETRIES = 2  # retries for failed lecture completion
 
 
 class Infynish(object):
-    def __init__(self):
+    def __init__(self, course_id: int):
         self.session = requests.Session()
         self.session.headers = HEADERS
         self.session.cookies = cookiejar_from_dict({
             "access_token": ACCESS_TOKEN
         })
 
+        self.course_id = course_id
+
     def get_lectures_data(self) -> dict:
-        resp = self.session.get(url=COURSE_URL, params={
+        resp = self.session.get(url=COURSE_URL.format(self.course_id), params={
             "caching_intent": True,
             "curriculum_types": "chapter,lecture,practice,quiz,role-play",
             "fields[asset]": "title,filename,asset_type,status,time_estimation,is_external",
@@ -26,7 +25,7 @@ class Infynish(object):
             "fields[practice]": "title,object_index,is_published,sort_order",
             "fields[quiz]": "title,object_index,is_published,sort_order,type",
             "page": 1,
-            "page_size": 9999
+            "page_size": 9999  # absurd number to fetch max results
         })
 
         if resp.status_code == 200:
@@ -35,58 +34,31 @@ class Infynish(object):
         logger.error("Please check your credentials! Shutting down.")
         raise SystemExit
 
-    def get_lecture_count(self, data: dict) -> int:
-        count = 0
-        for obj in data["results"]:
-            if obj["_class"] == "lecture":
-                count += 1
-        return count
+    def process_lectures(self, lectures_data: dict) -> None:
+        for element in lectures_data["results"]:
+            if element["_class"] == "lecture":
+                self.complete_lecture(element["id"])
 
-    def get_lecture_ids(self, data: dict) -> list:
-        lecture_ids = []
-        for obj in data["results"]:
-            if obj["_class"] == "lecture":
-                lecture_ids.append(obj["id"])
-        return lecture_ids
+    def complete_lecture(self, lecture_id: int) -> None:
+        resp = self.session.post(url=COMPLETE_LECTURE_URL.format(self.course_id), json={
+            "downloaded": False,
+            "lecture_id": lecture_id
+        })
 
-    def complete_lectures(self, lecture_ids: list, attempt: int = 1):
-        HEADERS["content-type"] = "application/json"
-        try_again = []
-        completed = []
-        if attempt > MAX_RETRIES:
-            print(f"[+] Retries exceeded {MAX_RETRIES}")
-            print(f"[+] IDs left to try {lecture_ids}")
-            print(f"[+] Left to try {len(lecture_ids)}")
-            return
-        for id in lecture_ids:
-            try:
-                data = {"lecture_id": id, "downloaded": False}
-                resp = requests.post(url=COMPLETE_LECTURE_URL, headers=HEADERS, cookies=COOKIE, json=data)
-                if resp.status_code == 201:
-                    completed.append(id)
-                    print(f"[+] Completed lecture {id}")
-                else:
-                    try_again.append(id)
-                    print(f"[-] ERROR {id}")
-                    print(f"[-] ERROR {resp.text}")
-            except Exception as e:
-                try_again.append(id)
-                print(f"[-] ERROR {e}")
-
-        if try_again:
-            print(f"[+] Trying again for {len(try_again)} lectures")
-            attempt += 1
-            self.complete_lectures(try_again, attempt)
+        if resp.status_code == 201:
+            logger.info(f"Watched lecture {lecture_id}!")
         else:
-            print(f"[+] Completed {len(completed)}/{len(lecture_ids)} lectures")
+            logger.error(f"Some error occured while watching {lecture_id}!")
 
 
-def main() -> None:
-    lecture_count_in_page = get_lecture_count(data)
-    print(f"[+] Total lectures {lecture_count_in_page}")
+@logger.catch
+@click.command()
+@click.option('--course', required=True, help="The course ID")
+def main(course: int) -> None:
+    infynish = Infynish(course)
 
-    lecture_ids = get_lecture_ids(data)
-    complete_lectures(lecture_ids)  # complete lectures
+    lectures = infynish.get_lectures_data()
+    infynish.process_lectures(lectures)
 
 
 if __name__ == "__main__":
