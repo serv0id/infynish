@@ -6,7 +6,7 @@ Specifically made for this course, but can be easily tweaked for other udemy cou
 
 ## Why I made it
 
-Neither i was able to found any working solutions to do this task, nor I had enough hours to waste on this course at that moment.
+Neither was I able to found any working solutions to do this task, nor I had enough hours to waste on this course at that moment.
 
 ## How to use it
 
@@ -18,13 +18,10 @@ Neither i was able to found any working solutions to do this task, nor I had eno
 - Log in to your infosys springboard account.
 - Open the course from the link above.
 - Start the course and wait on the loading page of Udemy.
-- Once udemy is loaded, open the the `Developer tools` (Press F12 key or Ctrl+Shift+I or Right click --> Inspect).![alt text](assets/image-1.png)
+- Once udemy is loaded, open the `Developer tools` (Press F12 key or Ctrl+Shift+I or Right click --> Inspect).![alt text](assets/image-1.png)
 - Open applications tab![alt text](assets/image-2.png)
 - Go to Cookies and look for access_token value as shown below:![alt text](assets/image-3.png)
-- Copy the access_token value and put it in the .env file.
-
-> [!CAUTION]
-> NEVER PUT ENVIRONMENT VARIABLES IN YOUR GITHUB REPOSITORY. THIS IS PRESENT HERE FOR ILLUSTRATIVE PURPOSES.
+- Copy the access_token value and put it in the config file.
 
 ### Preparing python environment
 
